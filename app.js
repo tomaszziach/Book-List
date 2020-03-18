@@ -16,7 +16,7 @@ class UI {
     }
 
     static addBookToList(book){
-        const list = document.querySelector('#book-list');
+        const list = document.getElementById('#book-list');
 
         const row = document.createElement('tr');
 
@@ -28,7 +28,15 @@ class UI {
         `;
 
         list.appendChild(row);
-    }
+
+    document.getElementById('delete-' + book.isbn).addEventListener('click', (e) =>
+    {
+        UI.deleteBook(e.target);
+
+        //Delete Notification
+        UI.showAlert('Book Removed', 'Success')
+    });
+}
 
     static deleteBook(el){
         if(el.classList.contains('delete')) {
@@ -45,7 +53,7 @@ class UI {
         container.insertBefore(div, form);
 
         //Vanish
-        setTimeout(() = document.querySelector('alert').remove(),3000);
+        setTimeout(() => document.querySelector('alert').remove(),3000);
     }
 
     static clearFields(){
@@ -70,8 +78,8 @@ class Store{
 
     static addBook(book){
         const books = Store.getBooks();
-        books.push('book');
-        localStorage.setItem('books', Json.stringify(books));
+        books.push(book);
+        localStorage.setItem('books', JSON.stringify(books));
     }
 
     static removeBook(isbn){
@@ -87,46 +95,40 @@ class Store{
     }
 }
 
-//Events: Display book
-document.addEventListener('DomContentLoaded', UI.displayBooks);
+$(document).ready(function() {
 
-//Event: Add a Book
-document.querySelector('#book-form').addEventListener('submit', (e)=> 
-{
-    //Prevent actual submit
-    e.preventDefault();
+    //Events: Display book
+    document.addEventListener('DomContentLoaded', UI.displayBooks);
 
-    //Get Form values
-    const title = document.querySelector('#title').value;
-    const author = document.querySelector('#author').value;
-    const isbn = document.querySelector('#isbn').value;
+    //Event: Add a Book
+    document.getElementById('book-form').addEventListener('submit', (e)=> 
+    {
+        //Prevent actual submit
+        e.preventDefault();
 
-    //Validate
-    if (title ==='' || author === '' || isbn === ''){
-        UI.showalert('Please fill in all fields', 'danger');
-    } else {
-    //Instantiate Book
-    const book = new Book(title, author, isbn);
-    
-    //Add Book to UI
-    UI.addBookToList(book);
+        //Get Form values
+        const title = document.querySelector('#title').value;
+        const author = document.querySelector('#author').value;
+        const isbn = document.querySelector('#isbn').value;
 
-    //Add book to store
-    Store.addBook(book);
-    
-    //Success
-    UI.showAlert('Book Added', 'Success');
+        //Validate
+        if (title ==='' || author === '' || isbn === ''){
+            UI.showalert('Please fill in all fields', 'danger');
+        } else {
+            //Instantiate Book
+            const book = new Book(title, author, isbn);
+            
+            //Add Book to UI
+            UI.addBookToList(book);
 
-    //Clear Fields
-    UI.clearFields();
-    }
-});
+            //Add book to store
+            Store.addBook(book);
+            
+            //Success
+            UI.showAlert('Book Added', 'Success');
 
-//Event: Remove a book
-document.querySelector('#book-list').addEventListener('click', (e)
-=>{
-    UI.deleteBook(e.target)
-
-    //Delete notification
-    UI.showAlert('Book Removed', 'Success');
+            //Clear Fields
+            UI.clearFields();
+        }
+    });
 });
